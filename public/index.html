@@ -4,33 +4,47 @@
     <link rel="stylesheet" href="xterm.css">
     <script src="socket.io/socket.io.js"></script>
     <script src="script.js" defer></script>
+    <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+    }
+
+    #terminal-container > .terminal {
+        padding: 1em;
+    }
+    </style>
 </head>
 
-<body>
-    <div style="margin-bottom: 1em;">Connection Status: <span id="connection-status">Connecting...</span></div>
-    <form style="margin-bottom: 1em; display: flex; align-items: flex-end;" id="connect-form">
-        <div>
-            <label>
-                Select Server<br>
-                <select id="servers-select" required style="width: 200px"></select>
-            </label>
+<body style="margin: 0;">
+    <div style="display: flex; flex-direction: column;">
+        <div style="padding: 1em">
+            <div style="margin-bottom: 1em;">Connection Status: <span id="connection-status">Connecting...</span></div>
+            <form style="display: flex; align-items: flex-end;" id="connect-form">
+                <div>
+                    <label>
+                        Select Server<br>
+                        <select id="servers-select" required style="width: 200px"></select>
+                    </label>
+                </div>
+                <div style="margin-left: 1em;">
+                    <label>
+                        Select User<br>
+                        <select id="users-select" required style="width: 200px"></select>
+                    </label>
+                </div>
+                <div style="margin-left: 1em;">
+                    <label>
+                        Select Folder<br>
+                        <select id="folders-select" required style="width: 200px"></select>
+                    </label>
+                </div>
+                <div style="margin-left: 1em">
+                    <button>Connect to selected server</button>
+                </div>
+            </form>
         </div>
-        <div style="margin-left: 1em;">
-            <label>
-                Select User<br>
-                <select id="users-select" required style="width: 200px"></select>
-            </label>
-        </div>
-        <div style="margin-left: 1em;">
-            <label>
-                Select Folder<br>
-                <select id="folders-select" required style="width: 200px"></select>
-            </label>
-        </div>
-        <div style="margin-left: 1em">
-            <button>Connect to selected server</button>
-        </div>
-    </form>
-    <div id="terminal-container" style="height: calc(100vh - 6.5em)"></div>
+        <div id="terminal-container" style="flex: 1"></div>
+    </div>
 </body>
 </html>

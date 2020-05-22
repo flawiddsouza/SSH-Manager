@@ -23,8 +23,8 @@ app.get('/servers', (req, res) => {
             return {
                 id: index,
                 name: item.name,
-                users: item.credentials.map(credential => credential.username),
-                folders: item.folders
+                users: item.credentials.map((credential, credentialIndex) => ({ id: credentialIndex, user: credential.username })),
+                folders: [{ id: 'Default Folder', folder: 'Default Folder' }].concat(item.folders.map((folder, folderIndex) => ({ id: folderIndex, folder })))
             }
         })
     )

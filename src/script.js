@@ -5,48 +5,22 @@ let usersSelect = document.getElementById('users-select')
 let foldersSelect = document.getElementById('folders-select')
 let terminalContainer = document.getElementById('terminal-container')
 
-let serversCopy =[]
+import * as DomHelpers from './Libs/DomHelpers'
+
+let serversCopy = []
 
 function fetchServers() {
     fetch('/servers').then(response => response.json()).then(servers => {
         serversCopy = servers
-        serversSelect.innerHTML = ''
-        servers.forEach(server => {
-            let option = document.createElement('option')
-            option.innerHTML = server.name
-            option.value = server.id
-            serversSelect.appendChild(option)
-        })
-
+        DomHelpers.fillSelectOptionsFromArray(serversSelect, servers, 'name', 'id')
         serversSelectChangeHandler()
     })
 }
 
 function serversSelectChangeHandler() {
     let selectedServer = serversCopy.find(item => item.id == serversSelect.value)
-
-    usersSelect.innerHTML = ''
-
-    selectedServer.users.forEach((user, index) => {
-        let option = document.createElement('option')
-        option.innerHTML = user
-        option.value = index
-        usersSelect.appendChild(option)
-    })
-
-    foldersSelect.innerHTML = ''
-
-    let option = document.createElement('option')
-    option.innerHTML = 'Default Folder'
-    option.value = 'Default Folder'
-    foldersSelect.appendChild(option)
-
-    selectedServer.folders.forEach((folder, index) => {
-        let option = document.createElement('option')
-        option.innerHTML = folder
-        option.value = index
-        foldersSelect.appendChild(option)
-    })
+    DomHelpers.fillSelectOptionsFromArray(usersSelect, selectedServer.users, 'user', 'id')
+    DomHelpers.fillSelectOptionsFromArray(foldersSelect, selectedServer.folders, 'folder', 'id')
 }
 
 serversSelect.addEventListener('change', serversSelectChangeHandler)
@@ -54,7 +28,10 @@ serversSelect.addEventListener('change', serversSelectChangeHandler)
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 
-let term = new Terminal({ cursorBlink: true })
+let term = new Terminal({
+    cursorBlink: true,
+    fontFamily: '"Cascadia Mono", "Ubuntu Mono", monospace'
+})
 
 const fitAddon = new FitAddon()
 term.loadAddon(fitAddon)

@@ -42,7 +42,7 @@ fitAddon.fit()
 
 window.clientId = null
 
-let socket = io.connect()
+let socket = io.connect({ transports: ['websocket'] })
 socket.on('connect', () => {
     connectStatusSpan.innerHTML = 'Connected'
 

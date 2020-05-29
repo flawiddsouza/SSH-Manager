@@ -52,7 +52,9 @@ app.post('/connect-server/:clientId/:id/:userId/:folderId', (req, res) => {
 
 server.listen(serverPort)
 
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+    transports: ['websocket']
+})
 
 let clients = {}
 let sshClients = {}

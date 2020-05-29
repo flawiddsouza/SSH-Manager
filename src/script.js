@@ -55,7 +55,7 @@ socket.on('connect', () => {
     })
 
     socket.on('data', data => {
-        term.write(data)
+        term.write(new Uint8Array(data))
     })
 
     socket.on('disconnect', () => {

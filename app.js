@@ -2,7 +2,6 @@ const express = require('express')
 const fs = require('fs')
 const http = require('http')
 const SSHClient = require('ssh2').Client
-const utf8 = require('utf8')
 const { performance } = require('perf_hooks')
 
 const app = express()
@@ -100,8 +99,8 @@ function createSSHConnection(clientId, host, port, username, password, privateKe
                 stream.write(data)
             })
 
-            stream.on('data', d => {
-                clients[clientId].emit('data', utf8.decode(d.toString('binary')))
+            stream.on('data', data => {
+                clients[clientId].emit('data', data)
             })
 
             stream.on('end', () => {

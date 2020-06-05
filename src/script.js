@@ -30,7 +30,8 @@ import { FitAddon } from 'xterm-addon-fit'
 
 let term = new Terminal({
     cursorBlink: true,
-    fontFamily: '"Cascadia Mono", "Ubuntu Mono", monospace'
+    fontFamily: '"Cascadia Mono", "Ubuntu Mono", monospace',
+    scrollback: 9999999
 })
 
 const fitAddon = new FitAddon()

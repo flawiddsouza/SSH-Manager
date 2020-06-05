@@ -4,6 +4,7 @@ let serversSelect = document.getElementById('servers-select')
 let usersSelect = document.getElementById('users-select')
 let foldersSelect = document.getElementById('folders-select')
 let terminalContainer = document.getElementById('terminal-container')
+let terminalSearchInput = document.getElementById('terminal-search')
 
 import * as DomHelpers from './Libs/DomHelpers'
 
@@ -27,6 +28,7 @@ serversSelect.addEventListener('change', serversSelectChangeHandler)
 
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
+import { SearchAddon } from 'xterm-addon-search'
 
 let term = new Terminal({
     cursorBlink: true,
@@ -36,6 +38,9 @@ let term = new Terminal({
 
 const fitAddon = new FitAddon()
 term.loadAddon(fitAddon)
+
+const searchAddon = new SearchAddon()
+term.loadAddon(searchAddon)
 
 term.open(terminalContainer)
 
@@ -76,4 +81,15 @@ connectForm.addEventListener('submit', e => {
     }).then(() => {
         term.focus()
     })
+})
+
+terminalSearchInput.addEventListener('keydown', e => {
+    if(e.shiftKey && e.key === 'Enter') {
+        searchAddon.findPrevious(e.target.value)
+        return
+    }
+
+    if(e.key === 'Enter') {
+        searchAddon.findNext(e.target.value)
+    }
 })

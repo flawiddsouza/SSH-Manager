@@ -8,6 +8,7 @@ const app = express()
 const serverPort = 9999
 const server = http.createServer(app)
 
+app.use(express.json())
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
@@ -44,7 +45,9 @@ app.post('/connect-server/:clientId/:id/:userId/:folderId', (req, res) => {
         serverToConnectTo.credentials[req.params.userId].username,
         serverToConnectTo.credentials[req.params.userId].password,
         null,
-        req.params.folderId !== 'Default Folder' ? serverToConnectTo.folders[req.params.folderId] : null
+        req.params.folderId !== 'Default Folder' ? serverToConnectTo.folders[req.params.folderId] : null,
+        req.body.termCols,
+        req.body.termRows
     )
     res.send('Success')
 })
@@ -81,12 +84,16 @@ function generateUUID() {
     })
 }
 
-function createSSHConnection(clientId, host, port, username, password, privateKey=null, folderPath=null) {
+function createSSHConnection(clientId, host, port, username, password, privateKey=null, folderPath, termCols, termRows) {
     let sshClient = new SSHClient()
     sshClient
     .on('ready', () => {
         clients[clientId].emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n')
-        sshClient.shell((err, stream) => {
+        sshClient.shell({
+            term: 'xterm',
+            cols: termCols,
+            rows: termRows
+        }, (err, stream) => {
             if(err) {
                 return clients[clientId].emit('data', '\r\n*** SSH SHELL ERROR: ' + err.message + ' ***\r\n')
             }
@@ -97,6 +104,10 @@ function createSSHConnection(clientId, host, port, username, password, privateKe
 
             clients[clientId].on('data', data => {
                 stream.write(data)
+            })
+
+            clients[clientId].on('resize', data => {
+                stream.setWindow(data.rows, data.cols)
             })
 
             stream.on('data', data => {

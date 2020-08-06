@@ -46,6 +46,13 @@ term.open(terminalContainer)
 
 fitAddon.fit()
 
+window.addEventListener('resize', resizeScreen, false)
+
+function resizeScreen () {
+    fitAddon.fit()
+    socket.emit('resize', { cols: term.cols, rows: term.rows })
+}
+
 window.clientId = null
 
 let socket = io.connect({ transports: ['websocket'] })
@@ -77,7 +84,15 @@ connectForm.addEventListener('submit', e => {
     term.reset()
 
     fetch(`/connect-server/${window.clientId}/${serversSelect.value}/${usersSelect.value}/${foldersSelect.value}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            termCols: term.cols,
+            termRows: term.rows
+        })
     }).then(() => {
         term.focus()
     })

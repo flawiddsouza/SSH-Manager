@@ -18,6 +18,8 @@ app.get('/', (req, res) => {
 let servers = JSON.parse(fs.readFileSync('./servers.json', 'utf8'))
 
 app.get('/servers', (req, res) => {
+    servers = JSON.parse(fs.readFileSync('./servers.json', 'utf8')) // refresh servers array
+
     res.send(
         servers.map((item, index) => {
             return {

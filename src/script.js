@@ -11,7 +11,7 @@ import * as DomHelpers from './Libs/DomHelpers'
 let serversCopy = []
 
 function fetchServers() {
-    fetch('/servers').then(response => response.json()).then(servers => {
+    fetch('servers').then(response => response.json()).then(servers => {
         serversCopy = servers
         DomHelpers.fillSelectOptionsFromArray(serversSelect, servers, 'name', 'id')
         serversSelectChangeHandler()
@@ -83,7 +83,7 @@ connectForm.addEventListener('submit', e => {
 
     term.reset()
 
-    fetch(`/connect-server/${window.clientId}/${serversSelect.value}/${usersSelect.value}/${foldersSelect.value}`, {
+    fetch(`connect-server/${window.clientId}/${serversSelect.value}/${usersSelect.value}/${foldersSelect.value}`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

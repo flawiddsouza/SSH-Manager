@@ -26,9 +26,10 @@ function serversSelectChangeHandler() {
 
 serversSelect.addEventListener('change', serversSelectChangeHandler)
 
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import { SearchAddon } from 'xterm-addon-search'
+import { Terminal } from '@xterm/xterm'
+import { FitAddon } from '@xterm/addon-fit'
+import { SearchAddon } from '@xterm/addon-search'
+import { WebglAddon } from '@xterm/addon-webgl'
 
 let term = new Terminal({
     cursorBlink: true,
@@ -38,6 +39,12 @@ let term = new Terminal({
 
 const fitAddon = new FitAddon()
 term.loadAddon(fitAddon)
+
+const weblglAddon = new WebglAddon()
+weblglAddon.onContextLoss(() => {
+    weblglAddon.dispose()
+})
+term.loadAddon(weblglAddon)
 
 const searchAddon = new SearchAddon()
 term.loadAddon(searchAddon)

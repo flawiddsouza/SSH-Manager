@@ -5,6 +5,7 @@ module.exports = function(server) {
     const SSHClient = require('ssh2').Client
     const { performance } = require('perf_hooks')
     const path = require('path')
+    const os = require('os')
 
     function getAbsolutePath(pathToFile) {
         return path.join(__dirname, pathToFile)
@@ -22,11 +23,12 @@ module.exports = function(server) {
 
         res.send(
             servers.map((item, index) => {
+                const folders = item.folders?.map((folder, folderIndex) => ({ id: folderIndex, folder })) ?? []
                 return {
                     id: index,
                     name: item.name,
                     users: item.credentials.map((credential, credentialIndex) => ({ id: credentialIndex, user: credential.username })),
-                    folders: [{ id: 'Default Folder', folder: 'Default Folder' }].concat(item.folders.map((folder, folderIndex) => ({ id: folderIndex, folder })))
+                    folders: [{ id: 'Default Folder', folder: 'Default Folder' }].concat(folders)
                 }
             })
         )
@@ -46,7 +48,7 @@ module.exports = function(server) {
             serverToConnectTo.port,
             serverToConnectTo.credentials[req.params.userId].username,
             serverToConnectTo.credentials[req.params.userId].password,
-            null,
+            serverToConnectTo.credentials[req.params.userId].privateKeyPath,
             req.params.folderId !== 'Default Folder' ? serverToConnectTo.folders[req.params.folderId] : null,
             req.body.termCols,
             req.body.termRows
@@ -84,7 +86,18 @@ module.exports = function(server) {
         })
     }
 
-    function createSSHConnection(clientId, host, port, username, password, privateKey=null, folderPath, termCols, termRows) {
+    function createSSHConnection(clientId, host, port, username, password, privateKeyPath=null, folderPath, termCols, termRows) {
+        const connectConfig = { host, port, username, password }
+
+        if(privateKeyPath) {
+            const homeDirectory = os.homedir()
+            if(privateKeyPath.startsWith('~/')) {
+                privateKeyPath = path.join(homeDirectory, privateKeyPath.slice(2))
+            }
+            connectConfig.privateKey = fs.readFileSync(privateKeyPath, 'utf8')
+            delete connectConfig.password
+        }
+
         let sshClient = new SSHClient()
         sshClient
         .on('ready', () => {
@@ -126,7 +139,7 @@ module.exports = function(server) {
         .on('error', err => {
             clients[clientId].emit('data', '\r\n*** SSH CONNECTION ERROR: ' + err.message + ' ***\r\n')
         })
-        .connect({ host, port, username, password, privateKey })
+        .connect(connectConfig)
 
         sshClients[clientId] = sshClient
     }
